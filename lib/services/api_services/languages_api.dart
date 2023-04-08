@@ -3,7 +3,7 @@ import 'package:translator_app/models/language_model.dart';
 import 'package:translator_app/utils/constants.dart';
 
 
-class Language{
+class LanguageRequest{
   static Future<LanguageModel> fetchLanguages() async {
     var headers = {
       'Accept-Encoding': 'application/json',

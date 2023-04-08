@@ -1,6 +1,5 @@
 import 'package:http/http.dart' as http;
 import 'package:translator_app/models/detect_model.dart';
-import 'package:translator_app/models/translated_model.dart';
 import 'package:translator_app/utils/constants.dart';
 
 class Detect {
