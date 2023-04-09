@@ -26,12 +26,12 @@ class BuildTranslateButton extends StatefulWidget {
 class _BuildTranslateButtonState extends State<BuildTranslateButton> {
   late Future<LanguageModel> _languageFetch;
   String searchQuery = '';
-@override
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _languageFetch =LanguageRequest.fetchLanguages();
-
+    _languageFetch = LanguageRequest.fetchLanguages();
   }
 
   @override
@@ -69,7 +69,8 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                 style: TextStyle(color: Colors.white54),
                               ),
                               widget.columnSpace,
-                              TextFormField(style: TextStyle(color: Colors.white),
+                              TextFormField(
+                                style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
@@ -79,7 +80,8 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                       Icons.search,
                                       color: Colors.white,
                                     )),
-                                onChanged: (value) => setState(() => searchQuery = value),
+                                onChanged: (value) =>
+                                    setState(() => searchQuery = value),
                               ),
                               widget.columnSpace,
                               const Text(
@@ -91,8 +93,7 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                       Expanded(
                           child: FutureBuilder<LanguageModel>(
                         future: _languageFetch,
-                        builder: (BuildContext context,
-                             snapshot) {
+                        builder: (BuildContext context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Center(
@@ -106,14 +107,19 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                               ConnectionState.done) {
                             if (snapshot.hasError) {
                               return const Center(
-                                  child: Text('Language fetch error occurred',style: TextStyle(color: Colors.white),));
+                                  child: Text(
+                                'Language fetch error occurred',
+                                style: TextStyle(color: Colors.white),
+                              ));
                             } else if (snapshot.hasData) {
-                            final   lang= snapshot.data!.data;
-                            final filteredLang = searchQuery.trim().isEmpty?
-                                lang.languages:lang.languages.where((language) => language.name
-                                .toLowerCase()
-                                .contains(searchQuery.toLowerCase()))
-                                .toList();
+                              final lang = snapshot.data!.data;
+                              final filteredLang = searchQuery.isEmpty
+                                  ? lang.languages
+                                  : lang.languages
+                                      .where((language) => language.name
+                                          .toLowerCase()
+                                          .contains(searchQuery.trim().toLowerCase()))
+                                      .toList();
                               return ListView.separated(
                                 itemCount: filteredLang.length,
                                 itemBuilder: (BuildContext context, int index) {
@@ -125,11 +131,13 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                     ),
                                     onTap: () {
                                       if (widget.isInputLanguageButton) {
-                                        setLanguage.setInputLanguage(filteredLang[index]);
+                                        setLanguage.setInputLanguage(
+                                            filteredLang[index]);
                                       } else {
-                                        setLanguage.setOutputLanguage(filteredLang[index]);
+                                        setLanguage.setOutputLanguage(
+                                            filteredLang[index]);
                                       }
-searchQuery='';
+                                      searchQuery = '';
                                       Navigator.pop(context);
                                     },
                                     contentPadding: EdgeInsets.only(left: 50.w),
@@ -153,7 +161,6 @@ searchQuery='';
                           }
                         },
                       )),
-
                     ],
                   ),
                 ),
