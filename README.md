@@ -24,6 +24,6 @@
  
 
 
-# 🤓 Author(s)
+# 🤓 Author
  
 ### *Anil Raj* 
