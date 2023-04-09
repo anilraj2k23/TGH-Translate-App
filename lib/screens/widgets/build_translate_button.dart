@@ -25,6 +25,7 @@ class BuildTranslateButton extends StatefulWidget {
 
 class _BuildTranslateButtonState extends State<BuildTranslateButton> {
   late Future<LanguageModel> _languageFetch;
+  String searchQuery = '';
 @override
   void initState() {
     // TODO: implement initState
@@ -68,7 +69,7 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                 style: TextStyle(color: Colors.white54),
                               ),
                               widget.columnSpace,
-                              TextFormField(
+                              TextFormField(style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
@@ -78,6 +79,7 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                       Icons.search,
                                       color: Colors.white,
                                     )),
+                                onChanged: (value) => setState(() => searchQuery = value),
                               ),
                               widget.columnSpace,
                               const Text(
@@ -87,10 +89,10 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                             ],
                           )),
                       Expanded(
-                          child: FutureBuilder(
+                          child: FutureBuilder<LanguageModel>(
                         future: _languageFetch,
                         builder: (BuildContext context,
-                            AsyncSnapshot<dynamic> snapshot) {
+                             snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Center(
@@ -106,24 +108,28 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                               return const Center(
                                   child: Text('Language fetch error occurred'));
                             } else if (snapshot.hasData) {
+                            final   lang= snapshot.data!.data;
+                            final filteredLang = searchQuery.trim().isEmpty?
+                                lang.languages:lang.languages.where((language) => language.name
+                                .toLowerCase()
+                                .contains(searchQuery.toLowerCase()))
+                                .toList();
                               return ListView.separated(
-                                itemCount: snapshot.data.data.languages.length,
+                                itemCount: filteredLang.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return ListTile(
                                     title: Text(
-                                      snapshot.data.data.languages[index].name,
+                                      filteredLang[index].name,
                                       style: const TextStyle(
                                           color: Colors.white60),
                                     ),
                                     onTap: () {
                                       if (widget.isInputLanguageButton) {
-                                        setLanguage.setInputLanguage(snapshot
-                                            .data.data.languages[index]);
+                                        setLanguage.setInputLanguage(filteredLang[index]);
                                       } else {
-                                        setLanguage.setOutputLanguage(snapshot
-                                            .data.data.languages[index]);
+                                        setLanguage.setOutputLanguage(filteredLang[index]);
                                       }
-
+searchQuery='';
                                       Navigator.pop(context);
                                     },
                                     contentPadding: EdgeInsets.only(left: 50.w),
