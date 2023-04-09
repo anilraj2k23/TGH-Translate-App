@@ -6,7 +6,7 @@
  * **Real-time Translation**
  * **Auto Detect Input Language**
  * **100+ Language Support**
- * **Language Search option**
+ * **Language Search Option**
  * **Find Language Feature**
  
 
