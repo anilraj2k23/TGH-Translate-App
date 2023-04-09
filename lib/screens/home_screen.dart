@@ -1,4 +1,6 @@
- import 'screens.dart';
+import 'package:translator_app/services/api_services/translate_api.dart';
+
+import 'screens.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,17 +10,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? translateFrom;
-  String? translateTo;
+  String? inputLanguageName;
+  String? outputLanguageName;
 
-  String? translateFromCode;
-  String? translateToCode;
+  String? inputLanguageCode;
+  String? outputLanguageCode;
+
+  TextEditingController inputController = TextEditingController();
+  TextEditingController outputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     SizedBox columnSpace = SizedBox(height: 20.h);
     SizedBox rowSpace = SizedBox(width: 10.w);
-
+    outputLanguageCode = 'es';
     return Scaffold(
         backgroundColor: const Color(0xFF141618),
         body: SafeArea(
@@ -54,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rowSpace,
                     Expanded(
+                      // Input language is not necessary. Auto detect, if not selected.
                       child: BuildTranslateButton(
                           columnSpace: columnSpace,
                           sheetTitle: 'To',
@@ -72,14 +78,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rowSpace,
                     Text(
-                      '(${translateFrom ?? 'Select a language'})',
+                      '(${inputLanguageName ?? 'Select a language'})',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.white60),
                     )
                   ],
                 ),
                 columnSpace,
+
                 TextFormField(
+                  // input field enable only if  target language is selected.
+                  enabled: outputLanguageCode != null,
+
+                  onChanged: (text) async {
+                    // translated texts are coming !
+                    if (outputLanguageCode != null) {
+                      _translate(
+                          inputText: text, targetLang: outputLanguageCode!);
+                    }
+                  },
+                  controller: inputController,
                   cursorColor: const Color(0xFFD4AF37),
                   minLines: 7,
                   maxLines: 10,
@@ -97,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rowSpace,
                     Text(
-                      '(${translateTo ?? 'Select a language'})',
+                      '(${outputLanguageName ?? 'Select a language'})',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.white60),
                     )
@@ -105,6 +123,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 columnSpace,
                 TextFormField(
+                  enabled: false,
+                  controller: outputController,
                   minLines: 7,
                   maxLines: 10,
                   maxLength: 2300,
@@ -116,5 +136,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         )));
+  }
+
+  Future<void> _translate(
+      {required String inputText, required String targetLang}) async {
+    final response = await Translate.getTranslatedText(
+        text: inputText, targetLang: targetLang);
+    final translatedText = response.data.translations[0].translatedText;
+    setState(() {
+      outputController.text = translatedText;
+    });
   }
 }
