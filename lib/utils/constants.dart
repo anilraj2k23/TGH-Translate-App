@@ -2,7 +2,7 @@ import 'utils.dart';
 
 class ApiConstants{
 static String get  apiKey => _apiKey;
-static const String _apiKey = '2087128806msh6856147b0abc5e9p1630f5jsna6287abb731e';
+static const String _apiKey = 'ADD YOUR API KEY HERE';
 static const String apiHost = 'google-translate1.p.rapidapi.com';
 static const String baseUrl = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
 static const String languagesEndpoint = '/languages?target=en';

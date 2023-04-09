@@ -80,8 +80,12 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                                       Icons.search,
                                       color: Colors.white,
                                     )),
-                                onChanged: (value) =>
-                                    setState(() => searchQuery = value),
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchQuery = value;
+                                  });
+                                }
+
                               ),
                               widget.columnSpace,
                               const Text(
