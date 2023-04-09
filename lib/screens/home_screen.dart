@@ -1,5 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:translator_app/provider/selected_language_provider.dart';
+import 'package:translator_app/screens/language_detect_screen.dart';
 import 'package:translator_app/services/api_services/translate_api.dart';
 
 import 'screens.dart';
@@ -40,9 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Text Translation',
-                  style: TextStyle(color: Colors.white, fontSize: 20.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Text Translation',
+                      style: TextStyle(color: Colors.white, fontSize: 20.sp),
+                    ),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.white30)),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LanguageDetect() ));
+                        },
+                        child: Text('Find Language',
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 12.sp)))
+                  ],
                 ),
                 columnSpace,
                 const Divider(
@@ -54,11 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                       child: BuildTranslateButton(
-                          columnSpace: columnSpace,
-                          sheetTitle: 'From',
-                          buttonLabel:
-                              selectedLanguage.selectedInputLanguage?.name ??
-                                  'Translate From'),
+                        columnSpace: columnSpace,
+                        sheetTitle: 'From',
+                        buttonLabel:
+                            selectedLanguage.selectedInputLanguage?.name ??
+                                'Translate From',
+                        isInputLanguageButton: true,
+                      ),
                     ),
                     rowSpace,
                     const Icon(
@@ -69,9 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       // Input language is not necessary. Auto detect, if not selected.
                       child: BuildTranslateButton(
-                          columnSpace: columnSpace,
-                          sheetTitle: 'To',
-                          buttonLabel: 'Translate To'),
+                        columnSpace: columnSpace,
+                        sheetTitle: 'To',
+                        buttonLabel:
+                            selectedLanguage.selectedOutputLanguage?.name ??
+                                'Translate To',
+                        isInputLanguageButton: false,
+                      ),
                     )
                   ],
                 ),
@@ -95,17 +116,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 columnSpace,
                 TextFormField(
                   // input field enable only if  target language is selected.
-                  enabled: outputLanguageCode != null,
+                  enabled:
+                      selectedLanguage.selectedOutputLanguage?.language != null,
 
                   onChanged: (text) async {
                     // translated texts are coming !
-                    if (outputLanguageCode != null) {
+                    if (selectedLanguage.selectedOutputLanguage?.language !=
+                        null) {
                       _translate(
                           inputText: text,
-                          targetLang: outputLanguageCode!,
-                          sourceLang:
-                              selectedLanguage.selectedInputLanguage?.language ??
-                                  '');
+                          targetLang:
+                              selectedLanguage.selectedOutputLanguage!.language,
+                          sourceLang: selectedLanguage
+                                  .selectedInputLanguage?.language ??
+                              '');
                     }
                   },
                   controller: _inputController,
@@ -126,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rowSpace,
                     Text(
-                      '(${outputLanguageName ?? 'Select a language'})',
+                      '(${selectedLanguage.selectedOutputLanguage?.name ?? 'Select a language'})',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.white60),
                     )

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:translator_app/provider/language_provider.dart';
+import 'package:translator_app/provider/selected_language_provider.dart';
 import 'package:translator_app/screens/home_screen.dart';
 import 'package:translator_app/utils/app_theme.dart';
 

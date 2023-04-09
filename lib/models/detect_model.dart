@@ -23,10 +23,10 @@ class Data {
     required this.detections,
   });
 
-  List<List<Detection>> detections;
+  List<Detection> detections;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    detections: List<List<Detection>>.from(json["detections"].map((x) => List<Detection>.from(x.map((x) => Detection.fromJson(x))))),
+    detections: List<Detection>.from(json["detections"][0].map((x) => Detection.fromJson(x))),
   );
 
 

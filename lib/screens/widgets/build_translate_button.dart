@@ -1,20 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
- import 'package:translator_app/provider/selected_language_provider.dart';
+import 'package:translator_app/models/language_model.dart';
+import 'package:translator_app/provider/selected_language_provider.dart';
 import 'package:translator_app/screens/screens.dart';
 import 'package:translator_app/services/api_services/languages_api.dart';
 
-class BuildTranslateButton extends StatelessWidget {
+class BuildTranslateButton extends StatefulWidget {
   const BuildTranslateButton({
     super.key,
     required this.columnSpace,
     required this.sheetTitle,
     required this.buttonLabel,
+    required this.isInputLanguageButton,
   });
 
   final SizedBox columnSpace;
   final String sheetTitle;
   final String buttonLabel;
+  final bool isInputLanguageButton;
+
+  @override
+  State<BuildTranslateButton> createState() => _BuildTranslateButtonState();
+}
+
+class _BuildTranslateButtonState extends State<BuildTranslateButton> {
+  late Future<LanguageModel> _languageFetch;
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _languageFetch =LanguageRequest.fetchLanguages();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +62,12 @@ class BuildTranslateButton extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              columnSpace,
+                              widget.columnSpace,
                               Text(
-                                sheetTitle,
+                                widget.sheetTitle,
                                 style: TextStyle(color: Colors.white54),
                               ),
-                              columnSpace,
+                              widget.columnSpace,
                               TextFormField(
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -59,18 +76,19 @@ class BuildTranslateButton extends StatelessWidget {
                                             BorderRadius.circular(20)),
                                     prefixIcon: const Icon(
                                       Icons.search,
-                                      color: Colors.white54,
+                                      color: Colors.white,
                                     )),
                               ),
-                              columnSpace,
+                              widget.columnSpace,
                               const Text(
                                 'All Languages',
                                 style: TextStyle(color: Colors.white54),
                               )
                             ],
                           )),
-                      Expanded(child: FutureBuilder(
-                        future: LanguageRequest.fetchLanguages(),
+                      Expanded(
+                          child: FutureBuilder(
+                        future: _languageFetch,
                         builder: (BuildContext context,
                             AsyncSnapshot<dynamic> snapshot) {
                           if (snapshot.connectionState ==
@@ -79,6 +97,7 @@ class BuildTranslateButton extends StatelessWidget {
                               child: CupertinoActivityIndicator(
                                 radius: 18.r,
                                 animating: true,
+                                color: Colors.white70,
                               ),
                             );
                           } else if (snapshot.connectionState ==
@@ -91,19 +110,27 @@ class BuildTranslateButton extends StatelessWidget {
                                 itemCount: snapshot.data.data.languages.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return ListTile(
-                                      title:   Text(
-                                       snapshot.data.data.languages[index].name,
-                                        style: const TextStyle(color: Colors.white60),
-                                      ),onTap: (){
-                                    setLanguage.setInputLanguage( snapshot.data.data.languages[index]);
-                                    Navigator.pop(context);
-                                  },
+                                    title: Text(
+                                      snapshot.data.data.languages[index].name,
+                                      style: const TextStyle(
+                                          color: Colors.white60),
+                                    ),
+                                    onTap: () {
+                                      if (widget.isInputLanguageButton) {
+                                        setLanguage.setInputLanguage(snapshot
+                                            .data.data.languages[index]);
+                                      } else {
+                                        setLanguage.setOutputLanguage(snapshot
+                                            .data.data.languages[index]);
+                                      }
+
+                                      Navigator.pop(context);
+                                    },
                                     contentPadding: EdgeInsets.only(left: 50.w),
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.r)),
                                     tileColor: const Color(0xFF121416),
-
                                   );
                                 },
                                 separatorBuilder:
@@ -112,10 +139,10 @@ class BuildTranslateButton extends StatelessWidget {
                                   height: 15.h,
                                 ),
                               );
-                            }else {
+                            } else {
                               return const Text('Empty data');
                             }
-                          }else {
+                          } else {
                             return Text('State: ${snapshot.connectionState}');
                           }
                         },
@@ -136,7 +163,7 @@ class BuildTranslateButton extends StatelessWidget {
               );
             });
       },
-      child: Text(buttonLabel),
+      child: Text(widget.buttonLabel),
     );
   }
 }
