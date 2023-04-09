@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import 'package:translator_app/provider/selected_language_provider.dart';
 import 'package:translator_app/services/api_services/translate_api.dart';
 
 import 'screens.dart';
@@ -10,20 +12,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // To store and show user selected languages.
   String? inputLanguageName;
   String? outputLanguageName;
 
+  // To store and sent user selected languages.
   String? inputLanguageCode;
   String? outputLanguageCode;
 
-  TextEditingController inputController = TextEditingController();
-  TextEditingController outputController = TextEditingController();
+  final TextEditingController _inputController = TextEditingController();
+  final TextEditingController _outputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var selectedLanguage = Provider.of<SelectedLanguageProvider>(context);
+
     SizedBox columnSpace = SizedBox(height: 20.h);
     SizedBox rowSpace = SizedBox(width: 10.w);
-    outputLanguageCode = 'es';
+
     return Scaffold(
         backgroundColor: const Color(0xFF141618),
         body: SafeArea(
@@ -50,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: BuildTranslateButton(
                           columnSpace: columnSpace,
                           sheetTitle: 'From',
-                          buttonLabel: 'Translate From'),
+                          buttonLabel:
+                              selectedLanguage.selectedInputLanguage?.name ??
+                                  'Translate From'),
                     ),
                     rowSpace,
                     const Icon(
@@ -78,14 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rowSpace,
                     Text(
-                      '(${inputLanguageName ?? 'Select a language'})',
+                      '(${selectedLanguage.selectedInputLanguage?.name ?? 'Select a language'})',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.white60),
                     )
                   ],
                 ),
                 columnSpace,
-
                 TextFormField(
                   // input field enable only if  target language is selected.
                   enabled: outputLanguageCode != null,
@@ -94,10 +101,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     // translated texts are coming !
                     if (outputLanguageCode != null) {
                       _translate(
-                          inputText: text, targetLang: outputLanguageCode!);
+                          inputText: text,
+                          targetLang: outputLanguageCode!,
+                          sourceLang:
+                              selectedLanguage.selectedInputLanguage?.language ??
+                                  '');
                     }
                   },
-                  controller: inputController,
+                  controller: _inputController,
                   cursorColor: const Color(0xFFD4AF37),
                   minLines: 7,
                   maxLines: 10,
@@ -123,8 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 columnSpace,
                 TextFormField(
+                  // Disabled text input, though it is used as a translations view area.
                   enabled: false,
-                  controller: outputController,
+                  controller: _outputController,
                   minLines: 7,
                   maxLines: 10,
                   maxLength: 2300,
@@ -139,12 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _translate(
-      {required String inputText, required String targetLang}) async {
+      {required String inputText,
+      required String targetLang,
+      String sourceLang = ''}) async {
     final response = await Translate.getTranslatedText(
-        text: inputText, targetLang: targetLang);
+        text: inputText, targetLang: targetLang, sourceLang: sourceLang);
     final translatedText = response.data.translations[0].translatedText;
     setState(() {
-      outputController.text = translatedText;
+      _outputController.text = translatedText;
     });
   }
 }
