@@ -106,7 +106,7 @@ class _BuildTranslateButtonState extends State<BuildTranslateButton> {
                               ConnectionState.done) {
                             if (snapshot.hasError) {
                               return const Center(
-                                  child: Text('Language fetch error occurred'));
+                                  child: Text('Language fetch error occurred',style: TextStyle(color: Colors.white),));
                             } else if (snapshot.hasData) {
                             final   lang= snapshot.data!.data;
                             final filteredLang = searchQuery.trim().isEmpty?
@@ -153,16 +153,7 @@ searchQuery='';
                           }
                         },
                       )),
-                      Container(
-                        color: const Color(0xFF2C2E2F),
-                        alignment: Alignment.center,
-                        height: 0.10.sh,
-                        width: double.infinity,
-                        child: const Text(
-                          'There Are 6 Languages With The Letter G',
-                          style: TextStyle(color: Colors.white54),
-                        ),
-                      )
+
                     ],
                   ),
                 ),
