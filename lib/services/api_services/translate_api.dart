@@ -26,7 +26,7 @@ class Translate {
 
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
-        print(responseBody);
+
         final translatedText = translatedModelFromJson(responseBody);
         return translatedText;
       } else {
